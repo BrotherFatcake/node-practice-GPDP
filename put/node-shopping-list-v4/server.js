@@ -111,6 +111,50 @@ app.delete('/recipes/:id', (req, res) => {
   res.status(204).end();
 });
 
+
+//create put function to listen at named endpoint + :id
+        //identify endpoint, call jsonParser before req, res args
+    app.put('/recipes/:id', jsonParser, (req, res)  =>  {
+
+      //create constant to identify array of requiredFields
+        const requiredFields = ['id', 'name', 'ingredients'];
+
+      //loop through json object keys presented in request the length of requiredFields
+        for (let i=0; i<requiredFields.length; i++) {
+
+      //create const to check for field existing using IF statement at current array position i
+          const field = requiredFields[i];
+
+      //if not field in request body
+          if(!(field in req.body))  {
+            
+      //log error message to console with message that field is missing
+            console.error(`${field} is missing`);
+      //respond with 400 status and send error message in json response
+            res.status(400);
+          }
+        }
+
+      //check if the request param ID is NOT equal to the request body ID log an error and return 400 status
+      if (req.params.id !== req.body.id)  {
+        console.error(`${req.params.id} and ${req.body.id} must match`);
+        return res.status(400).end();
+      }    
+              
+      //when ID matches log message of update to request param ID
+        console.log(`${req.params.id} will be updated`);
+      //call update operation with object request param id and request body name/ingredients 
+        Recipes.update({
+          id: req.params.id,
+          name: req.body.name,
+          ingredients: req.body.ingredients
+        });
+              
+      //respond with status 204 and end
+        res.status(204).end();
+
+    });
+
 app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${process.env.PORT || 8080}`);
 });
